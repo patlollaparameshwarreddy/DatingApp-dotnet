@@ -1,8 +1,13 @@
-﻿namespace API.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.DTOs
 {
     public class RegisterDto
     {
-        public required string username {  get; set; }
-        public required string password { get; set; }
+        [Required]
+        public  string username {  get; set; } = string.Empty;
+        [Required]
+        [StringLength(8, MinimumLength = 4)]
+        public required string password { get; set; } = string.Empty;
     }
 }

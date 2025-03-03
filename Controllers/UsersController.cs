@@ -1,5 +1,8 @@
 ﻿using API.DataContext;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,27 +10,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    
-    public class UsersController : BaseApiController
+    [Authorize]
+    public class UsersController(IUserRepository userRepository) : BaseApiController
     {
-        private readonly DatingDbContext _datingDbContext;
-        public UsersController(DatingDbContext datingDbContext) {
-            _datingDbContext = datingDbContext;
-        }
 
-        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers() { 
-            List<AppUser> users = await _datingDbContext.Users.ToListAsync();
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers() { 
+           var users = await userRepository.GetMembersAsync();
             return Ok(users);
         }
 
-        [Authorize]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUser(int id)
+        [HttpGet("{username}")]
+        public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            AppUser users = await _datingDbContext.Users.FindAsync(id);
-            return Ok(users);
+            var user = await userRepository.GetMemberAsync(username);
+            return user;
         }
     }
 }
